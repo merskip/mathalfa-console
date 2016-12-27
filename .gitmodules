@@ -1,0 +1,3 @@
+[submodule "mathalfa-base"]
+	path = mathalfa-base
+	url = git@gitlab.com:mathalfa/mathalfa-base.git
