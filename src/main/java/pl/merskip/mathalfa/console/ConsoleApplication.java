@@ -1,6 +1,8 @@
 package pl.merskip.mathalfa.console;
 
+import org.apache.commons.lang3.StringUtils;
 import pl.merskip.mathalfa.base.core.Symbol;
+import pl.merskip.mathalfa.base.core.fragment.FragmentException;
 import pl.merskip.mathalfa.base.core.fragment.FragmentsSplitter;
 import pl.merskip.mathalfa.base.infixparser.PostfixConverter;
 import pl.merskip.mathalfa.base.infixparser.PostfixParser;
@@ -10,6 +12,8 @@ import pl.merskip.mathalfa.base.shared.SharedFragmentsRegister;
 import java.util.Scanner;
 
 public class ConsoleApplication {
+    
+    private static final String PROMPT = " >> ";
     
     private FragmentsSplitter splitter;
     private PostfixConverter converter;
@@ -33,7 +37,7 @@ public class ConsoleApplication {
         System.out.println();
         
         while (true) {
-            System.out.print(" >> ");
+            System.out.print(PROMPT);
             String plainText = input.nextLine();
             
             if (plainText.equals("q") || plainText.equals("quit")) {
@@ -41,12 +45,23 @@ public class ConsoleApplication {
                 break;
             }
             
-            Symbol rootSymbol = parser.parseAndGetRootSymbol(plainText);
-            Symbol result = new CalculateOperation().executeForResult(rootSymbol);
+            try {
+                Symbol rootSymbol = parser.parseAndGetRootSymbol(plainText);
+                Symbol result = new CalculateOperation().executeForResult(rootSymbol);
     
-            System.out.println("Result: " + result.toPlainText());
-            System.out.println();
+                System.out.println("Result: " + result.toPlainText());
+                System.out.println();
+            } catch (FragmentException e) {
+                printFragmentException(e);
+            }
         }
+    }
+    
+    private void printFragmentException(FragmentException e) {
+        int skipChar = PROMPT.length() + e.getFragment().getIndex();
+        System.out.print(StringUtils.repeat(' ', skipChar));
+        System.out.print("^");
+        System.out.println(" - " + e.getMessage());
     }
     
 }
